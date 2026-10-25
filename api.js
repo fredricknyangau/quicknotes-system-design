@@ -5,6 +5,12 @@ const API_URL = "https://jsonplaceholder.typicode.com/posts";
 const loadBtn = document.getElementById("load-btn");
 const statusEl = document.getElementById("status");
 const notesList = document.getElementById("notes-list");
+const noteForm = document.getElementById("note-form");
+const titleInput = document.getElementById("title-input");
+const bodyInput = document.getElementById("body-input");
+const submitBtn = document.getElementById("submit-btn");
+
+const TITLE_MAX_LENGTH = 100;
 
 // Each rendered note gets a unique client-side key so notes never collide in
 // the DOM, even when the server returns duplicate ids.
@@ -66,12 +72,21 @@ function createNoteElement(note) {
   title.className = "note-title";
   title.textContent = note.title;
 
-  const body = document.createElement("p");
-  body.className = "note-body";
-  body.textContent = note.body;
-
-  li.append(title, body);
+  li.append(title);
+  if (note.body) {
+    const body = document.createElement("p");
+    body.className = "note-body";
+    body.textContent = note.body;
+    li.append(body);
+  }
   return li;
+}
+
+function removeEmptyState() {
+  const emptyState = notesList.querySelector(".empty-state");
+  if (emptyState) {
+    emptyState.remove();
+  }
 }
 
 function renderNotes(notes) {
@@ -101,4 +116,54 @@ async function loadNotes() {
   }
 }
 
+/** Returns an error message for an invalid title, or null if it is valid. */
+function validateTitle(title) {
+  if (title.length === 0) {
+    return "Title is required.";
+  }
+  if (title.length > TITLE_MAX_LENGTH) {
+    return `Title must be ${TITLE_MAX_LENGTH} characters or fewer.`;
+  }
+  return null;
+}
+
+async function createNote(event) {
+  event.preventDefault();
+
+  const title = titleInput.value.trim();
+  const body = bodyInput.value.trim();
+
+  const validationError = validateTitle(title);
+  if (validationError) {
+    setStatus(validationError, "error");
+    titleInput.setAttribute("aria-invalid", "true");
+    titleInput.focus();
+    return;
+  }
+  titleInput.removeAttribute("aria-invalid");
+
+  submitBtn.disabled = true;
+  setStatus("Creating note...", "loading");
+  try {
+    const { status, data } = await request(API_URL, {
+      method: "POST",
+      body: JSON.stringify({ title, body, userId: 1 }),
+    });
+    // JSONPlaceholder does not persist POSTs, so mark this note as local-only.
+    const li = createNoteElement(data);
+    li.dataset.local = "true";
+    removeEmptyState();
+    notesList.prepend(li);
+    setStatus(`Note created (status ${status}, id ${data.id}).`, "success");
+    noteForm.reset();
+  } catch (error) {
+    console.error(error);
+    setStatus("Could not create the note. Check your connection and try again.", "error");
+  } finally {
+    submitBtn.disabled = false;
+  }
+}
+
 loadBtn.addEventListener("click", loadNotes);
+noteForm.addEventListener("submit", createNote);
+titleInput.addEventListener("input", () => titleInput.removeAttribute("aria-invalid"));
