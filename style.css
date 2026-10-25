@@ -1,0 +1,222 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+:root {
+  --text: #1f2933;
+  --muted: #616e7c;
+  --border: #cbd2d9;
+  --bg: #f5f7fa;
+  --surface: #ffffff;
+  --primary: #1d4ed8;
+  --primary-hover: #1e40af;
+  --focus: #f59e0b;
+  --success-bg: #e3f9e5;
+  --success-text: #0e5a1a;
+  --success-border: #31a24c;
+  --error-bg: #fde8e8;
+  --error-text: #8a1c1c;
+  --error-border: #d64545;
+  --loading-bg: #e8f0fe;
+  --loading-text: #1e3a8a;
+  --loading-border: #5b8def;
+}
+
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue",
+    Arial, sans-serif;
+  line-height: 1.5;
+  color: var(--text);
+  background: var(--bg);
+}
+
+.container {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 1.5rem 1rem 3rem;
+}
+
+h1 {
+  margin: 0;
+  font-size: 2rem;
+}
+
+h2 {
+  font-size: 1.25rem;
+  margin: 2rem 0 0.75rem;
+}
+
+.subtitle {
+  margin: 0.25rem 0 0;
+  color: var(--muted);
+}
+
+/* Buttons */
+button {
+  font: inherit;
+  padding: 0.55rem 1.1rem;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  background: var(--primary);
+  color: #fff;
+  cursor: pointer;
+}
+
+button:hover:not(:disabled) {
+  background: var(--primary-hover);
+}
+
+button:disabled {
+  background: #9aa5b1;
+  color: #eef1f4;
+  cursor: not-allowed;
+  opacity: 0.8;
+}
+
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+}
+
+/* Status */
+.controls {
+  margin-top: 1.5rem;
+}
+
+#status {
+  margin: 1rem 0 0;
+  min-height: 1.5em;
+  padding: 0;
+  border-left: 4px solid transparent;
+  border-radius: 4px;
+}
+
+#status.loading,
+#status.success,
+#status.error {
+  padding: 0.6rem 0.9rem;
+}
+
+#status.loading {
+  background: var(--loading-bg);
+  color: var(--loading-text);
+  border-left-color: var(--loading-border);
+}
+
+#status.success {
+  background: var(--success-bg);
+  color: var(--success-text);
+  border-left-color: var(--success-border);
+}
+
+#status.error {
+  background: var(--error-bg);
+  color: var(--error-text);
+  border-left-color: var(--error-border);
+}
+
+/* Form */
+#note-form {
+  padding: 1rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+
+.field {
+  margin-bottom: 1rem;
+}
+
+label {
+  display: block;
+  margin-bottom: 0.3rem;
+  font-weight: 600;
+}
+
+.optional {
+  font-weight: 400;
+  color: var(--muted);
+}
+
+input,
+textarea {
+  width: 100%;
+  font: inherit;
+  padding: 0.5rem 0.65rem;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: #fff;
+  color: var(--text);
+}
+
+textarea {
+  resize: vertical;
+}
+
+/* Notes list */
+#notes-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.note,
+.empty-state {
+  margin-bottom: 0.75rem;
+  padding: 1rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+
+.empty-state {
+  color: var(--muted);
+  font-style: italic;
+  text-align: center;
+}
+
+.note-title {
+  margin: 0 0 0.35rem;
+  font-size: 1.05rem;
+  overflow-wrap: anywhere;
+}
+
+.note-body {
+  margin: 0 0 0.75rem;
+  white-space: pre-line;
+  overflow-wrap: anywhere;
+}
+
+.delete-btn {
+  padding: 0.35rem 0.8rem;
+  font-size: 0.9rem;
+  background: transparent;
+  color: var(--error-text);
+  border-color: var(--error-border);
+}
+
+.delete-btn:hover:not(:disabled) {
+  background: var(--error-bg);
+}
+
+.delete-btn:disabled {
+  background: #e4e7eb;
+  color: #9aa5b1;
+  border-color: #cbd2d9;
+}
+
+@media (max-width: 400px) {
+  h1 {
+    font-size: 1.6rem;
+  }
+
+  #load-btn,
+  #submit-btn {
+    width: 100%;
+  }
+}
