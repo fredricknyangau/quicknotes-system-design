@@ -139,7 +139,7 @@ flowchart TD
 
 ## 5. Request flows
 
-### 5.1 `GET /api/v1/notes?page=1&limit=20` — cache hit
+### 5.1 `GET /api/v1/notes?page=1&limit=20` - cache hit
 
 1. The client sends the request with `Authorization: Bearer <JWT>`.
 2. DNS resolves the hostname. The CDN sees `/api/*`, does **not** cache it, and
@@ -157,7 +157,7 @@ flowchart TD
 8. The app returns `200 OK` with `data` + `pagination`. Typical server time is
    about 5 ms.
 
-### 5.2 `GET /api/v1/notes?page=1&limit=20` — cache miss
+### 5.2 `GET /api/v1/notes?page=1&limit=20` - cache miss
 
 Steps 1–6 are the same as above.
 

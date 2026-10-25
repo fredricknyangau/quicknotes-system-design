@@ -1,4 +1,4 @@
-# QuickNotes — From Browser App to Online Service
+# QuickNotes - From Browser App to Online Service
 
 QuickNotes is a notes app that is moving from browser-only storage to an online
 service for 1 million users. This repository contains two parts:
@@ -91,32 +91,31 @@ actually saved**:
 
 ## What I learned
 
-> **Draft — Fredrick: rewrite each point in your own words before submitting.**
 
-1. **Draft: `fetch` does not fail on HTTP errors.** I expected a 404 or 500 to
+1.`fetch` does not fail on HTTP errors.** I expected a 404 or 500 to
    go to the `catch` block, but `fetch` only rejects on network failures. I had
    to check `response.ok` myself and throw an error with the status code, and
    handle network failures separately so the user sees a friendly message
    instead of a raw error.
 
-2. **Draft: `innerHTML` with API data is a security risk.** Text from a server or
+2.`innerHTML` with API data is a security risk.** Text from a server or
    a user could contain HTML or scripts (XSS). Building elements with
    `createElement` and setting `textContent` means anything the API returns is
    shown as plain text and never runs.
 
-3. **Draft: server ids are not always unique, and keys matter.** JSONPlaceholder
+3.server ids are not always unique, and keys matter.** JSONPlaceholder
    returns id 101 for every created note. If I had deleted notes by searching
    for their id, one click would have removed every created note. Giving each
    element its own client key, and linking each Delete button to its own
    `<li>`, taught me to keep "DOM identity" separate from "server identity".
 
-4. **Draft: estimates should drive the design, not the other way round.** Working
+4.estimates should drive the design, not the other way round.** Working
    out the numbers (about 232 reads/s and 58 writes/s at peak for 1M users)
    showed that one database could handle the load. Replicas, a cache and
    multiple app servers are mainly there for availability and latency, which
    changed how I justify each component.
 
-5. **Draft: the database should enforce its own rules.** Constraints like
+5.the database should enforce its own rules.** Constraints like
    `CHECK (char_length(title) BETWEEN 1 AND 100)`, foreign keys and
    `UNIQUE (user_id, name)` still protect the data if a bug in the client or API
    lets bad input through. Validation belongs in every layer.
