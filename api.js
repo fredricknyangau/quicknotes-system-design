@@ -79,6 +79,15 @@ function createNoteElement(note) {
     body.textContent = note.body;
     li.append(body);
   }
+
+  const deleteBtn = document.createElement("button");
+  deleteBtn.type = "button";
+  deleteBtn.className = "delete-btn";
+  deleteBtn.textContent = "Delete";
+  deleteBtn.setAttribute("aria-label", `Delete note: ${note.title}`);
+  deleteBtn.addEventListener("click", () => deleteNote(li, deleteBtn));
+
+  li.append(deleteBtn);
   return li;
 }
 
@@ -161,6 +170,61 @@ async function createNote(event) {
     setStatus("Could not create the note. Check your connection and try again.", "error");
   } finally {
     submitBtn.disabled = false;
+  }
+}
+
+/*
+ * Deleting notes, and two JSONPlaceholder quirks:
+ *
+ * 1. JSONPlaceholder never saves POSTs, and every created note comes back
+ *    with id 101. Two created notes can therefore share the same server id.
+ *    Each <li> has its own client-side data-key, and this function only ever
+ *    removes the exact <li> it was given. It never searches by data-id, so
+ *    deleting one "id 101" note never removes the others.
+ *
+ * 2. Created notes (data-local="true") never existed on the server. We still
+ *    send DELETE /posts/{id} to show the real API call. If the server answers
+ *    404, we remove the note anyway, because there is nothing on the server
+ *    to delete, and the status message says so plainly. For notes loaded from
+ *    the server, any error keeps the note and shows an error status.
+ */
+async function deleteNote(li, deleteBtn) {
+  const id = li.dataset.id;
+  const isLocal = li.dataset.local === "true";
+
+  deleteBtn.disabled = true;
+  setStatus("Deleting note...", "loading");
+  try {
+    const { status } = await request(`${API_URL}/${id}`, { method: "DELETE" });
+    removeNoteElement(li);
+    if (isLocal) {
+      setStatus(
+        `Note removed (status ${status}). It was only stored in this page, because JSONPlaceholder does not save new notes.`,
+        "success"
+      );
+    } else {
+      setStatus(`Note ${id} deleted (status ${status}).`, "success");
+    }
+  } catch (error) {
+    console.error(error);
+    if (isLocal && error.status === 404) {
+      removeNoteElement(li);
+      setStatus(
+        "Note removed locally. The server returned 404 because JSONPlaceholder never saved it.",
+        "success"
+      );
+    } else {
+      setStatus("Could not delete the note. Check your connection and try again.", "error");
+    }
+  } finally {
+    deleteBtn.disabled = false;
+  }
+}
+
+function removeNoteElement(li) {
+  li.remove();
+  if (!notesList.querySelector(".note")) {
+    renderEmptyState();
   }
 }
 
